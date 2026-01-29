@@ -34,7 +34,7 @@ const AdminDashboard = () => {
             const allProjects = projectsRes.data;
             setProjects(allProjects.filter(p => p.status !== 'CLOSED'));
             setCompletedProjects(allProjects.filter(p => p.status === 'CLOSED'));
-        } catch (error) { console.error(error); }
+        } catch (error) { console.error("Lỗi tải dữ liệu:", error); }
     };
 
     useEffect(() => { fetchData(); }, []);
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
         try {
             const res = await axios.get(`http://localhost:8080/api/users/search?keyword=${searchTerm}`);
             setUsers(res.data);
-        } catch (err) { console.error(err); }
+        } catch (err) { console.error("Lỗi tìm kiếm:", err); }
     };
 
     const handleResetSearch = () => { setSearchTerm(''); fetchData(); };
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
             let url = 'http://localhost:8080/api/users';
             if (newUser.deptId) url += `?deptId=${newUser.deptId}`;
             await axios.post(url, newUser);
-            alert("Thêm thành công!"); fetchData();
+            alert("Thêm nhân sự thành công!"); fetchData();
             setNewUser({ fullName: '', email: '', password: '', role: 'EMPLOYEE', deptId: '' });
         } catch (err) { alert("Lỗi: " + err.message); }
     };
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
 
     const handleAddDept = async (e) => {
         e.preventDefault();
-        try { await axios.post('http://localhost:8080/api/departments', newDept); alert("Thêm phòng thành công!"); fetchData(); setNewDept({ name: '', description: '' }); } catch (err) { alert("Lỗi!"); }
+        try { await axios.post('http://localhost:8080/api/departments', newDept); alert("Thêm phòng thành công!"); fetchData(); setNewDept({ name: '', description: '' }); } catch (err) { alert("Lỗi thêm phòng!"); }
     };
 
     const handleAddProject = async (e) => {
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
         try {
             const url = `http://localhost:8080/api/projects/create?deptId=${selectedDept.id}&email=${currentUser.email}`;
             await axios.post(url, newProject);
-            alert(`Đã tạo dự án!`);
+            alert(`Đã tạo dự án cho phòng ${selectedDept.name}!`);
             fetchData();
             setNewProject({ name: '', description: '', deadline: '', priority: 'MEDIUM' });
             setShowProjectForm(false);
@@ -89,16 +89,14 @@ const AdminDashboard = () => {
 
     return (
         <div className="min-vh-100 bg-light d-flex flex-column" style={{fontFamily: "'Segoe UI', sans-serif"}}>
-            <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 sticky-top w-100">
-                <div className="d-flex align-items-center w-100" style={{maxWidth: '1400px', margin: '0 auto'}}>
+            <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 sticky-top border-bottom w-100">
+                <div className="container-fluid">
                     <div className="d-flex align-items-center"><span className="fs-4 me-2">🚀</span><span className="navbar-brand fw-bold text-primary tracking-wide">ADMIN PORTAL</span></div>
                     <div className="ms-auto"><button onClick={handleLogout} className="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">Đăng xuất</button></div>
                 </div>
             </nav>
             
-            {/* 🔥 CONTAINER CHÍNH: Ép kiểu căn giữa cứng */}
-            <div className="py-4 flex-grow-1 w-100" style={{maxWidth: '1400px', margin: '0 auto', paddingLeft: '15px', paddingRight: '15px'}}>
-                
+            <div className="container-fluid px-4 py-4 flex-grow-1">
                 <div className="d-flex justify-content-center mb-4">
                     <div className="bg-white p-1 rounded-pill shadow-sm d-inline-flex">
                         <button className={`btn rounded-pill px-4 fw-bold ${activeTab === 'users' ? 'btn-primary shadow' : 'btn-light text-muted'}`} onClick={() => setActiveTab('users')}>👥 Nhân sự</button>
@@ -109,7 +107,7 @@ const AdminDashboard = () => {
 
                 {activeTab === 'users' && (
                     <div className="row g-4">
-                        <div className="col-lg-3"> 
+                        <div className="col-12 col-md-3 col-xl-2"> 
                             <div className="card border-0 shadow-sm h-100">
                                 <div className="card-header bg-primary text-white fw-bold py-3">Thêm Nhân Sự Mới</div>
                                 <div className="card-body bg-light">
@@ -129,14 +127,14 @@ const AdminDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-9">
+                        <div className="col-12 col-md-9 col-xl-10">
                             <div className="card border-0 shadow-sm h-100">
                                 <div className="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                                     <h5 className="mb-0 text-primary fw-bold">Danh sách Nhân viên</h5>
                                     <form onSubmit={handleSearchUser} className="d-flex gap-2">
-                                        <input className="form-control form-control-sm" placeholder="Tìm tên/email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+                                        <input className="form-control form-control-sm" placeholder="Tìm tên hoặc email..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
                                         <button type="submit" className="btn btn-sm btn-primary"><i className="bi bi-search"></i></button>
-                                        <button type="button" className="btn btn-sm btn-light border" onClick={handleResetSearch}><i className="bi bi-arrow-counterclockwise"></i></button>
+                                        <button type="button" className="btn btn-sm btn-light border" onClick={handleResetSearch} title="Reset"><i className="bi bi-arrow-counterclockwise"></i></button>
                                     </form>
                                 </div>
                                 <div className="table-responsive">
@@ -147,7 +145,7 @@ const AdminDashboard = () => {
                                                 <tr key={u.id}>
                                                     <td className="fw-bold">{u.fullName}</td>
                                                     <td>{u.email}</td>
-                                                    <td>{u.department?.name || '--'}</td>
+                                                    <td>{u.department?.name || <span className="text-muted small">--</span>}</td>
                                                     <td><span className={`badge ${u.role === 'ADMIN' ? 'bg-danger' : u.role === 'MANAGER' ? 'bg-warning text-dark' : 'bg-info text-white'}`}>{u.role}</span></td>
                                                     <td className="text-end"><button className="btn btn-sm btn-outline-danger border-0" onClick={() => handleDeleteUser(u.id)}>❌</button></td>
                                                 </tr>
@@ -163,7 +161,7 @@ const AdminDashboard = () => {
                 
                 {activeTab === 'departments' && (
                     <div className="row g-4">
-                        <div className="col-lg-3">
+                        <div className="col-12 col-md-3 col-xl-2">
                             <div className="card border-0 shadow-sm mb-4">
                                 <div className="card-header bg-primary text-white fw-bold">Tạo Phòng Ban</div>
                                 <div className="card-body bg-white">
@@ -182,7 +180,7 @@ const AdminDashboard = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="col-lg-9">
+                        <div className="col-12 col-md-9 col-xl-10">
                             <div className="card border-0 shadow h-100">
                                 <div className="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                     {selectedDept ? (
@@ -215,7 +213,7 @@ const AdminDashboard = () => {
                                         <div className="card-body bg-light">
                                             <div className="row g-3">
                                                 {deptCompletedProjects.map(p => (
-                                                    <div key={p.id} className="col-md-4 col-lg-3">
+                                                    <div key={p.id} className="col-md-6 col-lg-3">
                                                         <div className="card h-100 border-0 shadow-sm hover-shadow" style={{cursor: 'pointer'}} onClick={() => setViewingCompletedProject(p)}>
                                                             <div className="card-body">
                                                                 <div className="d-flex justify-content-between mb-2"><span className="badge bg-secondary">🔒 CLOSED</span><small className="text-muted">{p.deadline}</small></div>

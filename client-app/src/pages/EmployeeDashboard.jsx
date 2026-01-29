@@ -6,11 +6,7 @@ const EmployeeDashboard = () => {
     const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(null);
     const [myTasks, setMyTasks] = useState([]);
-    
-    // FILTER STATE
     const [filterStatus, setFilterStatus] = useState('ALL'); 
-
-    // MODAL STATE
     const [editingTask, setEditingTask] = useState(null);
     const [updatePayload, setUpdatePayload] = useState({ status: '', percent: 0 });
 
@@ -54,13 +50,13 @@ const EmployeeDashboard = () => {
     return (
         <div className="min-vh-100 bg-light d-flex flex-column" style={{fontFamily: "'Segoe UI', sans-serif"}}>
             <nav className="navbar navbar-dark bg-primary px-4 shadow w-100">
-                <div className="d-flex align-items-center w-100" style={{maxWidth: '1400px', margin: '0 auto'}}>
+                <div className="container-fluid">
                     <div className="d-flex align-items-center text-white"><i className="bi bi-person-workspace fs-4 me-2"></i><span className="fw-bold tracking-wide">EMPLOYEE ZONE</span></div>
                     <button onClick={handleLogout} className="btn btn-sm btn-light fw-bold text-primary ms-auto">Đăng xuất</button>
                 </div>
             </nav>
 
-            <div className="py-5 flex-grow-1 w-100" style={{maxWidth: '1400px', margin: '0 auto', paddingLeft: '15px', paddingRight: '15px'}}>
+            <div className="container-fluid px-4 py-5 flex-grow-1">
                 <div className="row mb-4 align-items-center justify-content-center">
                     <div className="col-lg-8">
                         <h3 className="fw-bold text-dark mb-0">Xin chào, {currentUser.fullName} 👋</h3>
@@ -89,7 +85,7 @@ const EmployeeDashboard = () => {
                     <div className="card-body bg-light p-3">
                         <div className="row g-3">
                             {filteredTasks.map(task => (
-                                <div key={task.id} className="col-md-6 col-lg-4 col-xl-3">
+                                <div key={task.id} className="col-12 col-md-6 col-lg-4 col-xl-3">
                                     <div className="card h-100 border-0 shadow-sm task-card transition">
                                         <div className="card-body">
                                             <div className="d-flex justify-content-between mb-2">

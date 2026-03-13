@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     @Autowired
@@ -18,8 +18,13 @@ public class UserController {
 
     // 1. Lấy danh sách tất cả (Mặc định)
     @GetMapping
-    public List<User> getAll() { 
-        return userService.getAllUsers(); 
+    public ResponseEntity<?> getAll() { 
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Lỗi: " + e.getMessage());
+        }
     }
 
     // 2. 🔥 API MỚI: Tìm kiếm nhân viên
@@ -33,7 +38,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> create(
             @RequestBody User user,
-            @RequestParam(required = false) Long deptId 
+            @RequestParam(required = false) String deptId 
     ) {
         try {
             return ResponseEntity.ok(userService.createUser(user, deptId));
@@ -44,7 +49,7 @@ public class UserController {
 
     // 4. Xóa nhân viên
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok("Đã xóa nhân viên thành công!");

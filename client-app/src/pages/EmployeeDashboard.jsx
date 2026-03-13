@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 const EmployeeDashboard = () => {
@@ -20,7 +20,7 @@ const EmployeeDashboard = () => {
 
     const fetchMyTasks = async (userId) => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/tasks/my-tasks/${userId}`);
+            const res = await api.get(`/tasks/my-tasks/${userId}`);
             setMyTasks(res.data);
         } catch (err) { console.error(err); }
     };
@@ -28,7 +28,7 @@ const EmployeeDashboard = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/api/tasks/${editingTask.id}/status`, {
+            await api.put(`/tasks/${editingTask.id}/status`, {
                 status: updatePayload.status,
                 percent: parseInt(updatePayload.percent)
             });

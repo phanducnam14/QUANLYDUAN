@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
 const ManagerDashboard = () => {
@@ -38,7 +38,7 @@ const ManagerDashboard = () => {
     const fetchManagerInfo = async (userId) => {
         setIsLoading(true);
         try {
-            const res = await axios.get('http://localhost:8080/api/users');
+            const res = await api.get('/users');
             // Dùng == để so sánh ID (tránh lỗi string vs number)
             const foundUser = res.data.find(u => u.id == userId);
             
@@ -59,8 +59,8 @@ const ManagerDashboard = () => {
     const fetchDeptData = async (deptId) => {
         try {
             const [usersRes, projectsRes] = await Promise.all([
-                axios.get('http://localhost:8080/api/users'),
-                axios.get('http://localhost:8080/api/projects')
+                api.get('/users'),
+                api.get('/projects')
             ]);
             
             // 🔥 SỬA: Dùng == để so sánh ID
@@ -83,7 +83,7 @@ const ManagerDashboard = () => {
         setSelectedProject(project);
         setActiveTab('PROJECT_DETAIL');
         try {
-            const res = await axios.get(`http://localhost:8080/api/tasks/project/${project.id}`);
+            const res = await api.get(`/tasks/project/${project.id}`);
             // 🔥 SỬA: Đảm bảo tasks luôn là mảng để tránh crash
             setTasks(Array.isArray(res.data) ? res.data : []);
         } catch (e) { 
@@ -95,7 +95,7 @@ const ManagerDashboard = () => {
     const handleCompleteProject = async () => {
         if (!window.confirm("⚠️ CẢNH BÁO: Dự án sẽ chuyển sang trạng thái 'ĐÃ ĐÓNG'. Bạn có chắc chắn không?")) return;
         try {
-            await axios.put(`http://localhost:8080/api/projects/${selectedProject.id}/complete`);
+            await api.put(`/projects/${selectedProject.id}/complete`);
             alert("🎉 Chúc mừng! Dự án đã hoàn thành và đóng lại.");
             const updatedProject = { ...selectedProject, status: 'CLOSED' };
             setSelectedProject(updatedProject);
@@ -107,7 +107,7 @@ const ManagerDashboard = () => {
     const handleAddMember = async () => {
         if (!selectedMemberToAdd) return alert("Vui lòng chọn nhân viên!");
         try {
-            await axios.post(`http://localhost:8080/api/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
+            await api.post(`/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
             alert("✅ Đã thêm thành công!");
             setShowMemberModal(false);
             setSelectedMemberToAdd('');
@@ -116,7 +116,7 @@ const ManagerDashboard = () => {
             await fetchDeptData(myDepartment.id);
             
             // Reload lại project hiện tại để thấy member mới
-            const res = await axios.get('http://localhost:8080/api/projects');
+            const res = await api.get('/projects');
             const updated = res.data.find(p => p.id == selectedProject.id);
             if(updated) setSelectedProject(updated);
             
@@ -128,11 +128,11 @@ const ManagerDashboard = () => {
     const handleCreateTask = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`http://localhost:8080/api/tasks/create?projectId=${selectedProject.id}&assigneeId=${newTask.assigneeId}`, newTask);
+            await api.post(`/tasks/create?projectId=${selectedProject.id}&assigneeId=${newTask.assigneeId}`, newTask);
             alert("✅ Giao việc thành công!");
             setShowTaskModal(false);
             setNewTask({ title: '', description: '', deadline: '', priority: 'MEDIUM', assigneeId: '' });
-            const res = await axios.get(`http://localhost:8080/api/tasks/project/${selectedProject.id}`);
+            const res = await api.get(`/tasks/project/${selectedProject.id}`);
             setTasks(Array.isArray(res.data) ? res.data : []);
         } catch (err) { alert("Lỗi: " + (err.response?.data || err.message)); }
     };

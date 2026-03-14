@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../components/NotificationBell';
 
 const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ManagerDashboard = () => {
     const fetchManagerInfo = async (userId) => {
         setIsLoading(true);
         try {
-            const res = await axios.get('http://localhost:8080/api/users');
+            const res = await api.get('/users');
             // Dùng == để so sánh ID (tránh lỗi string vs number)
             const foundUser = res.data.find(u => u.id == userId);
             
@@ -59,8 +60,8 @@ const ManagerDashboard = () => {
     const fetchDeptData = async (deptId) => {
         try {
             const [usersRes, projectsRes] = await Promise.all([
-                axios.get('http://localhost:8080/api/users'),
-                axios.get('http://localhost:8080/api/projects')
+                api.get('/users'),
+                api.get('/projects')
             ]);
             
             // 🔥 SỬA: Dùng == để so sánh ID
@@ -83,7 +84,7 @@ const ManagerDashboard = () => {
         setSelectedProject(project);
         setActiveTab('PROJECT_DETAIL');
         try {
-            const res = await axios.get(`http://localhost:8080/api/tasks/project/${project.id}`);
+            const res = await api.get(`/tasks/project/${project.id}`);
             // 🔥 SỬA: Đảm bảo tasks luôn là mảng để tránh crash
             setTasks(Array.isArray(res.data) ? res.data : []);
         } catch (e) { 
@@ -95,7 +96,7 @@ const ManagerDashboard = () => {
     const handleCompleteProject = async () => {
         if (!window.confirm("⚠️ CẢNH BÁO: Dự án sẽ chuyển sang trạng thái 'ĐÃ ĐÓNG'. Bạn có chắc chắn không?")) return;
         try {
-            await axios.put(`http://localhost:8080/api/projects/${selectedProject.id}/complete`);
+            await api.put(`/projects/${selectedProject.id}/complete`);
             alert("🎉 Chúc mừng! Dự án đã hoàn thành và đóng lại.");
             const updatedProject = { ...selectedProject, status: 'CLOSED' };
             setSelectedProject(updatedProject);
@@ -105,34 +106,46 @@ const ManagerDashboard = () => {
     };
 
     const handleAddMember = async () => {
-        if (!selectedMemberToAdd) return alert("Vui lòng chọn nhân viên!");
+        if (!selectedMemberToAdd) {
+            alert("Vui lòng chọn nhân viên!");
+            return;
+        }
+
         try {
-            await axios.post(`http://localhost:8080/api/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
+            console.log(`📤 Thêm member: ${selectedMemberToAdd} vào project: ${selectedProject.id}`);
+            
+            // Gọi API thêm member
+            const response = await api.post(`/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
+            console.log("✅ Thêm member thành công:", response.data);
+            
             alert("✅ Đã thêm thành công!");
             setShowMemberModal(false);
             setSelectedMemberToAdd('');
             
-            // Reload dữ liệu phòng để cập nhật lại danh sách
+            // 🔥 CỰC KỲ QUAN TRỌNG: Cập nhật selectedProject ngay với dữ liệu mới từ API
+            setSelectedProject(response.data);
+            
+            // Reload dữ liệu phòng để cập nhật lại danh sách members khả dụng
+            console.log("🔄 Đang reload dữ liệu phòng...");
             await fetchDeptData(myDepartment.id);
             
-            // Reload lại project hiện tại để thấy member mới
-            const res = await axios.get('http://localhost:8080/api/projects');
-            const updated = res.data.find(p => p.id == selectedProject.id);
-            if(updated) setSelectedProject(updated);
+            console.log("✅ Hoàn tất thêm member!");
             
-        } catch (err) { 
-            alert("Lỗi: " + (err.response?.data || "Thất bại")); 
+        } catch (err) {
+            console.error("❌ Lỗi thêm member:", err);
+            const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Thất bại";
+            alert("Lỗi: " + errorMessage);
         }
     };
 
     const handleCreateTask = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`http://localhost:8080/api/tasks/create?projectId=${selectedProject.id}&assigneeId=${newTask.assigneeId}`, newTask);
+            await api.post(`/tasks/create?projectId=${selectedProject.id}&assigneeId=${newTask.assigneeId}`, newTask);
             alert("✅ Giao việc thành công!");
             setShowTaskModal(false);
             setNewTask({ title: '', description: '', deadline: '', priority: 'MEDIUM', assigneeId: '' });
-            const res = await axios.get(`http://localhost:8080/api/tasks/project/${selectedProject.id}`);
+            const res = await api.get(`/tasks/project/${selectedProject.id}`);
             setTasks(Array.isArray(res.data) ? res.data : []);
         } catch (err) { alert("Lỗi: " + (err.response?.data || err.message)); }
     };
@@ -177,7 +190,12 @@ const ManagerDashboard = () => {
                         <div><div className="fw-bold">TRƯỞNG PHÒNG</div><div className="small opacity-75">{myDepartment.name}</div></div>
                     </div>
                     <div className="ms-auto d-flex align-items-center gap-3">
+                        <NotificationBell />
                         <span className="text-white small">Xin chào, <b>{currentUser.fullName}</b></span>
+                        <button onClick={() => navigate('/profile')} className="btn btn-outline-light btn-sm px-3 rounded-pill" title="Xem tài khoản cá nhân">
+                            <i className="bi bi-person-fill me-1"></i>
+                            Tài khoản
+                        </button>
                         <button onClick={handleLogout} className="btn btn-outline-light btn-sm px-3 rounded-pill">Đăng xuất</button>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ import com.projectmanagement.core_system.repository.ProjectRepository;
 import com.projectmanagement.core_system.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils; // Nhớ import cái này để check rỗng
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -25,11 +25,8 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private SequenceGeneratorService sequenceGeneratorService;
-
     // 1. Tạo dự án mới
-    public Project createProject(Project project, long departmentId, String creatorEmail) {
+    public Project createProject(Project project, String departmentId, String creatorEmail) {
         // 🔥 Validate: Tên dự án không được để trống
         if (!StringUtils.hasText(project.getName())) {
             throw new RuntimeException("Tên dự án không được để trống!");
@@ -38,9 +35,7 @@ public class ProjectService {
         Department dept = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new RuntimeException("Phòng ban không tồn tại!"));
 
-        // Sinh ID tự tăng
-        project.setId(sequenceGeneratorService.generateSequence(Project.SEQUENCE_NAME));
-
+        // Để MongoDB tự tạo ID
         project.setDepartment(dept);
         project.setCreatedBy(creatorEmail);
         
@@ -53,9 +48,12 @@ public class ProjectService {
     }
 
     // 2. Thêm thành viên vào dự án
-    public Project addMember(long projectId, long userId) {
+    public Project addMember(String projectId, String userId) {
+        System.out.println("🔵 [DEBUG] Thêm member: projectId=" + projectId + ", userId=" + userId);
+        
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Dự án không tìm thấy!"));
+        System.out.println("✅ [DEBUG] Found project: " + project.getName());
 
         // Check trạng thái trước khi thêm
         if (project.getStatus() == ProjectStatus.CLOSED) {
@@ -64,23 +62,29 @@ public class ProjectService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Nhân viên không tìm thấy!"));
+        System.out.println("✅ [DEBUG] Found user: " + user.getFullName());
 
         // Check cùng phòng ban
-        long projectDeptId = project.getDepartment().getId();
-        long userDeptId = (user.getDepartment() != null) ? user.getDepartment().getId() : -1;
+        String projectDeptId = project.getDepartment().getId();
+        String userDeptId = (user.getDepartment() != null) ? user.getDepartment().getId() : null;
+        System.out.println("🔍 [DEBUG] projectDeptId=" + projectDeptId + ", userDeptId=" + userDeptId);
 
-        if (projectDeptId != userDeptId) {
+        if (!projectDeptId.equals(userDeptId)) {
             throw new RuntimeException("LỖI: Nhân viên này thuộc phòng ban khác!");
         }
 
         // Check trùng lặp: Nếu user đã có trong list rồi thì thôi
-        boolean exists = project.getMembers().stream().anyMatch(m -> m.getId() == userId);
+        boolean exists = project.getMembers().stream().anyMatch(m -> m.getId().equals(userId));
         if (exists) {
             throw new RuntimeException("Nhân viên này đã tham gia dự án rồi!");
         }
 
+        System.out.println("➕ [DEBUG] Adding member to project...");
         project.getMembers().add(user);
-        return projectRepository.save(project);
+        Project saved = projectRepository.save(project);
+        System.out.println("✅ [DEBUG] Member added successfully! Total members: " + saved.getMembers().size());
+        
+        return saved;
     }
 
     // 3. Lấy tất cả
@@ -91,7 +95,7 @@ public class ProjectService {
     // 4. 🔥 MỚI: Tìm kiếm dự án
     public List<Project> searchProjects(String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
-            return getAllProjects(); // Trả về tất cả nếu từ khóa rỗng
+            return getAllProjects();
         }
         return projectRepository.findByNameContainingIgnoreCase(keyword);
     }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../components/NotificationBell';
 
 const EmployeeDashboard = () => {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ const EmployeeDashboard = () => {
 
     const fetchMyTasks = async (userId) => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/tasks/my-tasks/${userId}`);
+            const res = await api.get(`/tasks/my-tasks/${userId}`);
             setMyTasks(res.data);
         } catch (err) { console.error(err); }
     };
@@ -28,7 +29,7 @@ const EmployeeDashboard = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/api/tasks/${editingTask.id}/status`, {
+            await api.put(`/tasks/${editingTask.id}/status`, {
                 status: updatePayload.status,
                 percent: parseInt(updatePayload.percent)
             });
@@ -52,7 +53,14 @@ const EmployeeDashboard = () => {
             <nav className="navbar navbar-dark bg-primary px-4 shadow w-100">
                 <div className="container-fluid">
                     <div className="d-flex align-items-center text-white"><i className="bi bi-person-workspace fs-4 me-2"></i><span className="fw-bold tracking-wide">EMPLOYEE ZONE</span></div>
-                    <button onClick={handleLogout} className="btn btn-sm btn-light fw-bold text-primary ms-auto">Đăng xuất</button>
+                    <div className="d-flex align-items-center gap-3 ms-auto">
+                        <NotificationBell />
+                        <button onClick={() => navigate('/profile')} className="btn btn-sm btn-light fw-bold text-primary">
+                            <i className="bi bi-person-fill me-1"></i>
+                            Tài khoản
+                        </button>
+                        <button onClick={handleLogout} className="btn btn-sm btn-light fw-bold text-primary">Đăng xuất</button>
+                    </div>
                 </div>
             </nav>
 

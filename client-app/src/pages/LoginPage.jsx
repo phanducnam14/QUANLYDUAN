@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const LoginPage = () => {
@@ -15,8 +15,11 @@ const LoginPage = () => {
         setError('');
 
         try {
-            const res = await axios.post('http://localhost:8080/api/auth/login', { email, password });
-            const user = res.data;
+            const res = await axios.post('/api/auth/login', { email, password });
+            const { token, user } = res.data;
+
+            // Lưu token và user vào localStorage
+            localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
             if (user.role === 'ADMIN') navigate('/admin');
@@ -74,6 +77,10 @@ const LoginPage = () => {
                         {isLoading ? 'Đang xử lý...' : 'ĐĂNG NHẬP'}
                     </button>
                 </form>
+
+                <div className="text-center mt-3">
+                    <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+                </div>
             </div>
         </div>
     );

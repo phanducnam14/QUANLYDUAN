@@ -77,4 +77,23 @@ public class UserService {
         }
         return userRepository.findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword);
     }
+
+    // 6. 🔥 MỚI: Đổi mật khẩu
+    public User changePassword(String userId, String oldPassword, String newPassword) {
+        User user = getUserById(userId);
+
+        // Verify old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không chính xác!");
+        }
+
+        // Validate new password
+        if (!StringUtils.hasText(newPassword) || newPassword.length() < 6) {
+            throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự!");
+        }
+
+        // Update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(user);
+    }
 }

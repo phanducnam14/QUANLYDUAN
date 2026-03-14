@@ -33,4 +33,45 @@ api.interceptors.response.use(
     }
 );
 
+// ========== NOTIFICATION API ==========
+export const notificationAPI = {
+    // Lấy danh sách thông báo
+    getNotifications: () => api.get('/notifications'),
+
+    // Lấy số lượng thông báo chưa đọc
+    getUnreadCount: () => api.get('/notifications/unread-count'),
+
+    // Lấy danh sách thông báo chưa đọc
+    getUnreadNotifications: () => api.get('/notifications/unread'),
+
+    // Đánh dấu thông báo là đã đọc
+    markAsRead: (notificationId) => api.post(`/notifications/${notificationId}/mark-as-read`),
+
+    // Đánh dấu tất cả thông báo là đã đọc
+    markAllAsRead: () => api.post('/notifications/mark-all-as-read'),
+};
+
+// ========== USER API ==========
+export const userAPI = {
+    // Đổi mật khẩu
+    changePassword: (oldPassword, newPassword) => 
+        api.post('/users/change-password', {
+            oldPassword,
+            newPassword
+        }),
+
+    // Tìm kiếm user
+    searchUsers: (keyword) => api.get('/users/search', { params: { keyword } }),
+
+    // Lấy tất cả user
+    getAllUsers: () => api.get('/users'),
+
+    // Tạo user mới
+    createUser: (userData, deptId) => 
+        api.post('/users', userData, { params: { deptId } }),
+
+    // Xóa user
+    deleteUser: (userId) => api.delete(`/users/${userId}`),
+};
+
 export default api;

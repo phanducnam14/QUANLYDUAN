@@ -49,8 +49,11 @@ public class ProjectService {
 
     // 2. Thêm thành viên vào dự án
     public Project addMember(String projectId, String userId) {
+        System.out.println("🔵 [DEBUG] Thêm member: projectId=" + projectId + ", userId=" + userId);
+        
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Dự án không tìm thấy!"));
+        System.out.println("✅ [DEBUG] Found project: " + project.getName());
 
         // Check trạng thái trước khi thêm
         if (project.getStatus() == ProjectStatus.CLOSED) {
@@ -59,10 +62,12 @@ public class ProjectService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Nhân viên không tìm thấy!"));
+        System.out.println("✅ [DEBUG] Found user: " + user.getFullName());
 
         // Check cùng phòng ban
         String projectDeptId = project.getDepartment().getId();
         String userDeptId = (user.getDepartment() != null) ? user.getDepartment().getId() : null;
+        System.out.println("🔍 [DEBUG] projectDeptId=" + projectDeptId + ", userDeptId=" + userDeptId);
 
         if (!projectDeptId.equals(userDeptId)) {
             throw new RuntimeException("LỖI: Nhân viên này thuộc phòng ban khác!");
@@ -74,8 +79,12 @@ public class ProjectService {
             throw new RuntimeException("Nhân viên này đã tham gia dự án rồi!");
         }
 
+        System.out.println("➕ [DEBUG] Adding member to project...");
         project.getMembers().add(user);
-        return projectRepository.save(project);
+        Project saved = projectRepository.save(project);
+        System.out.println("✅ [DEBUG] Member added successfully! Total members: " + saved.getMembers().size());
+        
+        return saved;
     }
 
     // 3. Lấy tất cả

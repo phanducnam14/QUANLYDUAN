@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../components/NotificationBell';
 
 const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -105,23 +106,35 @@ const ManagerDashboard = () => {
     };
 
     const handleAddMember = async () => {
-        if (!selectedMemberToAdd) return alert("Vui lòng chọn nhân viên!");
+        if (!selectedMemberToAdd) {
+            alert("Vui lòng chọn nhân viên!");
+            return;
+        }
+
         try {
-            await api.post(`/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
+            console.log(`📤 Thêm member: ${selectedMemberToAdd} vào project: ${selectedProject.id}`);
+            
+            // Gọi API thêm member
+            const response = await api.post(`/projects/${selectedProject.id}/add-member/${selectedMemberToAdd}`);
+            console.log("✅ Thêm member thành công:", response.data);
+            
             alert("✅ Đã thêm thành công!");
             setShowMemberModal(false);
             setSelectedMemberToAdd('');
             
-            // Reload dữ liệu phòng để cập nhật lại danh sách
+            // 🔥 CỰC KỲ QUAN TRỌNG: Cập nhật selectedProject ngay với dữ liệu mới từ API
+            setSelectedProject(response.data);
+            
+            // Reload dữ liệu phòng để cập nhật lại danh sách members khả dụng
+            console.log("🔄 Đang reload dữ liệu phòng...");
             await fetchDeptData(myDepartment.id);
             
-            // Reload lại project hiện tại để thấy member mới
-            const res = await api.get('/projects');
-            const updated = res.data.find(p => p.id == selectedProject.id);
-            if(updated) setSelectedProject(updated);
+            console.log("✅ Hoàn tất thêm member!");
             
-        } catch (err) { 
-            alert("Lỗi: " + (err.response?.data || "Thất bại")); 
+        } catch (err) {
+            console.error("❌ Lỗi thêm member:", err);
+            const errorMessage = err.response?.data?.message || err.response?.data || err.message || "Thất bại";
+            alert("Lỗi: " + errorMessage);
         }
     };
 
@@ -177,7 +190,12 @@ const ManagerDashboard = () => {
                         <div><div className="fw-bold">TRƯỞNG PHÒNG</div><div className="small opacity-75">{myDepartment.name}</div></div>
                     </div>
                     <div className="ms-auto d-flex align-items-center gap-3">
+                        <NotificationBell />
                         <span className="text-white small">Xin chào, <b>{currentUser.fullName}</b></span>
+                        <button onClick={() => navigate('/profile')} className="btn btn-outline-light btn-sm px-3 rounded-pill" title="Xem tài khoản cá nhân">
+                            <i className="bi bi-person-fill me-1"></i>
+                            Tài khoản
+                        </button>
                         <button onClick={handleLogout} className="btn btn-outline-light btn-sm px-3 rounded-pill">Đăng xuất</button>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../components/NotificationBell';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -101,7 +102,14 @@ const AdminDashboard = () => {
             <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 sticky-top border-bottom w-100">
                 <div className="container-fluid">
                     <div className="d-flex align-items-center"><span className="fs-4 me-2">🚀</span><span className="navbar-brand fw-bold text-primary tracking-wide">ADMIN PORTAL</span></div>
-                    <div className="ms-auto"><button onClick={handleLogout} className="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">Đăng xuất</button></div>
+                    <div className="ms-auto d-flex align-items-center gap-3">
+                        <NotificationBell />
+                        <button onClick={() => navigate('/profile')} className="btn btn-outline-primary btn-sm rounded-pill px-4 fw-bold">
+                            <i className="bi bi-person-fill me-1"></i>
+                            Tài khoản
+                        </button>
+                        <button onClick={handleLogout} className="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">Đăng xuất</button>
+                    </div>
                 </div>
             </nav>
             

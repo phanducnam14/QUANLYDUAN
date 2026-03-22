@@ -14202,3 +14202,35 @@ Sat Mar 21 22:58:35 ICT 2026 - ? EntryPoint: 401 Unauthorized - URL: /favicon.ic
 2026-03-22T01:09:45.191643800 - Token found for user: employee@gmail.com
 2026-03-22T01:09:45.196225900 - UserDetails loaded for: employee@gmail.com
 2026-03-22T01:09:45.200487700 - Authentication SET in SecurityContext for: employee@gmail.com with roles: [ROLE_EMPLOYEE]
+2026-03-22T01:09:55.185965300 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:09:55.186963300 - Token found for user: employee@gmail.com
+2026-03-22T01:09:55.189966 - UserDetails loaded for: employee@gmail.com
+2026-03-22T01:09:55.191967100 - Authentication SET in SecurityContext for: employee@gmail.com with roles: [ROLE_EMPLOYEE]
+2026-03-22T01:10:13.204332800 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:10:13.207336800 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:10:13.207336800 - Token found for user: employee@gmail.com
+2026-03-22T01:10:13.208860600 - Token found for user: manager2@gmail.com
+2026-03-22T01:10:13.211858300 - UserDetails loaded for: employee@gmail.com
+2026-03-22T01:10:13.211858300 - UserDetails loaded for: manager2@gmail.com
+2026-03-22T01:10:13.214917500 - Authentication SET in SecurityContext for: employee@gmail.com with roles: [ROLE_EMPLOYEE]
+2026-03-22T01:10:13.214917500 - Authentication SET in SecurityContext for: manager2@gmail.com with roles: [ROLE_MANAGER]
+2026-03-22T01:10:13.217916600 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:10:13.219918 - Token found for user: manage@gmail.com
+2026-03-22T01:10:13.223917700 - UserDetails loaded for: manage@gmail.com
+2026-03-22T01:10:13.226791400 - Authentication SET in SecurityContext for: manage@gmail.com with roles: [ROLE_MANAGER]
+2026-03-22T01:10:13.235751200 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:10:13.236718100 - Token found for user: admin@gmail.com
+2026-03-22T01:10:13.240717400 - UserDetails loaded for: admin@gmail.com
+2026-03-22T01:10:13.242717600 - Authentication SET in SecurityContext for: admin@gmail.com with roles: [ROLE_ADMIN]
+2026-03-22T01:11:13.186031300 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:11:13.188033300 - Token found for user: manager2@gmail.com
+2026-03-22T01:11:13.192033300 - UserDetails loaded for: manager2@gmail.com
+2026-03-22T01:11:13.195032 - Authentication SET in SecurityContext for: manager2@gmail.com with roles: [ROLE_MANAGER]
+2026-03-22T01:11:13.202091900 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:11:13.204310300 - Token found for user: manage@gmail.com
+2026-03-22T01:11:13.208309200 - UserDetails loaded for: manage@gmail.com
+2026-03-22T01:11:13.211658200 - Authentication SET in SecurityContext for: manage@gmail.com with roles: [ROLE_MANAGER]
+2026-03-22T01:11:13.221658400 - Incoming request: GET /api/notifications/unread-count
+2026-03-22T01:11:13.222658800 - Token found for user: admin@gmail.com
+2026-03-22T01:11:13.225660200 - UserDetails loaded for: admin@gmail.com
+2026-03-22T01:11:13.228658300 - Authentication SET in SecurityContext for: admin@gmail.com with roles: [ROLE_ADMIN]

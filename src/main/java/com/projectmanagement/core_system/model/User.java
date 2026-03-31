@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class User {
 
     private String fullName;
 
-    @Indexed(unique = true)
+    @Indexed(unique = true, sparse = true)
     private String email;
 
     private String password;
@@ -33,11 +35,14 @@ public class User {
     private ERole role;
 
     @DBRef
-    @JsonIgnoreProperties({"manager", "members"})
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnoreProperties({"manager"})
     private Department department;
 
     private boolean isActive = true; 
     private Long createdAt = System.currentTimeMillis();
     
     private String avatarUrl;
+    private String googleEmail; // Field for linking Google account if different from primary email
 }

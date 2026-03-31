@@ -9,18 +9,9 @@ import ProjectChatPanel from '../components/ProjectChatPanel';
 import PrivateChatPanel from '../components/PrivateChatPanel';
 import { askConfirm } from '../utils/confirm';
 import Swal from 'sweetalert2';
+import { formatDeptName } from '../utils/formatUtils';
 import './AdminDashboard.css';
 
-const formatDeptName = (name) => {
-    if (!name) return "";
-    let cleanName = name.trim();
-    if (cleanName.toLowerCase().startsWith("phòng ")) {
-        cleanName = cleanName.substring(6).trim();
-    } else if (cleanName.toLowerCase().startsWith("ban ")) {
-        cleanName = cleanName.substring(4).trim();
-    }
-    return `Phòng ${cleanName}`;
-};
 
 const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -137,7 +128,7 @@ const ManagerDashboard = () => {
             
             // Lấy tất cả nhân viên thuộc phòng (cho multi-select)
             const staff = usersRes.data.filter(u => 
-                (u.role === 'EMPLOYEE' || u.role === 'QA' || u.role === 'MANAGER') && 
+                (u.role === 'EMPLOYEE' || u.role === 'MANAGER') && 
                 (u.department && u.department.id == deptId)
             );
             setAllEmployees(staff);

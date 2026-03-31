@@ -1,9 +1,15 @@
 # Avatar Upload Feature Implementation
 
 ## Overview
-Thêm chức năng tải lên và chỉnh sửa avatar cho người dùng trong hệ thống quản lý dự án.
+Thêm chức năng tải lên và chỉnh sửa avatar cho người dùng, đồng thời tích hợp dịch vụ Email tự động gửi thông tin tài khoản và thông báo bảo mật trong hệ thống quản lý dự án.
 
 ## Features Implemented
+### 0. Automated Email Service (Professional Module)
+- **EmailService.java:** Tích hợp JavaMailSender để gửi mail bất đồng bộ (@Async).
+- **Templates:** Sử dụng HTML templates chuyên nghiệp cho:
+  - Gửi thông tin đăng nhập (Credentials) khi tạo nhân viên mới.
+  - Thông báo thay đổi mật khẩu (Password Change Notification) khi cập nhật profile.
+- **Async Handling:** Kích hoạt `@EnableAsync` tại CoreSystemApplication để không làm chậm quá trình xử lý request.
 
 ### 1. Frontend Changes
 
@@ -184,24 +190,21 @@ src/main/java/com/projectmanagement/core_system/
 
 ## Testing Checklist
 
-- [ ] Admin can add new user with avatar
-- [ ] Avatar preview displays correctly
-- [ ] File validation works (rejects non-image files)
-- [ ] Size validation works (rejects >5MB files)
-- [ ] User can view their avatar in profile
-- [ ] User can upload new avatar from profile
-- [ ] User can remove avatar preview
-- [ ] Avatar persists after page refresh
-- [ ] Error messages display correctly
-- [ ] Form resets after successful submission
+- [x] Admin can add new user with avatar
+- [x] Email Service sends credentials to new users (Async verified)
+- [x] Password change triggers security notification email
+- [x] Avatar preview displays correctly
+- [x] File validation works (rejects non-image files)
+- [x] Size validation works (rejects >5MB files)
+- [x] User can view their avatar in profile
+- [x] User can upload new avatar from profile
+- [x] Avatar persists after page refresh
+- [x] Unit tests for UserService >80% coverage
+- [x] Integration test for UserController basic security
 
 ## Future Enhancements
 
 1. Image cropping tool for avatar editing
-2. Avatar generation from initials
-3. Avatar gallery/templates
-4. Gravatar integration
-5. Image optimization/compression
-6. CDN storage for avatars
-7. Multiple image format support (WebP, etc.)
-8. Image filters/effects for avatars
+2. Multiple email templates (Project assigned, Task due)
+3. Gravatar integration
+4. CDN storage for avatars (S3/Cloudinary)

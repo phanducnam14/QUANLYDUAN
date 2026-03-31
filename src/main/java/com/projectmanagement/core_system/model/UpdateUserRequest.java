@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class UpdateUserRequest {
     private String email;
+    private String fullName;
     private String deptId;
     private ERole role;
+    private String googleEmail;
 }
 

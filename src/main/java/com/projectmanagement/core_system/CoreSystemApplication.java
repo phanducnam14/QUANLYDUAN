@@ -21,7 +21,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
 @SpringBootApplication
+@EnableAsync
+@EnableAspectJAutoProxy
 public class CoreSystemApplication {
 
     public static void main(String[] args) {

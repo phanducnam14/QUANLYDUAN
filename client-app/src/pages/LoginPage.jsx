@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
+import axios from 'axios';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -23,7 +25,7 @@ const LoginPage = () => {
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
 
-            if (user.role === 'ADMIN') navigate('/admin');
+            if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') navigate('/admin');
             else if (user.role === 'MANAGER') navigate('/manager');
             else navigate('/employee');
 
@@ -40,9 +42,10 @@ const LoginPage = () => {
         }
     };
 
+    // Removed useGoogleLogin hook, will use GoogleLogin component instead
+
     return (
         <div className="min-vh-100 bg-light d-flex align-items-center justify-content-center">
-            {/* Tăng maxWidth lên 500px cho form to đẹp hơn */}
             <div className="card shadow-lg border-0 p-5" style={{maxWidth: '500px', width: '90%', borderRadius: '15px'}}>
                 <div className="text-center mb-4">
                     <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style={{width: 80, height: 80}}>
@@ -55,39 +58,86 @@ const LoginPage = () => {
                 {error && <div className="alert alert-danger text-center p-2 mb-4">{error}</div>}
 
                 <form onSubmit={handleLogin}>
-                    <div className="form-floating mb-3">
-                        <input 
-                            type="email" 
-                            className="form-control" 
-                            id="emailInput" 
-                            placeholder="name@example.com"
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
+                    <div className="mb-3">
+                        <label className="form-label">Email</label>
+                        <input
+                            type="email"
+                            className="form-control"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            placeholder="admin@gmail.com"
                         />
-                        <label htmlFor="emailInput">Email</label>
                     </div>
-                    <div className="form-floating mb-4">
-                        <input 
-                            type="password" 
-                            className="form-control" 
-                            id="passInput" 
-                            placeholder="Password" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
+                    <div className="mb-4">
+                        <div className="d-flex justify-content-between">
+                            <label className="form-label">Mật khẩu</label>
+                            <a href="/forgot-password" style={{fontSize: '0.85rem', color: '#6366f1', textDecoration: 'none'}}>
+                                Quên mật khẩu?
+                            </a>
+                        </div>
+                        <input
+                            type="password"
+                            className="form-control"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            placeholder="••••••••"
                         />
-                        <label htmlFor="passInput">Mật khẩu</label>
                     </div>
-                    
-                    <button type="submit" className="btn btn-primary w-100 py-3 fw-bold fs-5 shadow-sm rounded-pill" disabled={isLoading}>
-                        {isLoading ? 'Đang xử lý...' : 'ĐĂNG NHẬP'}
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100 py-2 mb-3"
+                        disabled={isLoading}
+                        style={{background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', border: 'none'}}
+                    >
+                        {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                     </button>
                 </form>
 
-                <div className="text-center mt-3">
-                    <Link to="/forgot-password" className="text-decoration-none">Quên mật khẩu?</Link>
+                <div className="text-center my-3 position-relative">
+                    <hr />
+                    <span style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#fff', padding: '0 10px', color: '#94a3b8', fontSize: '0.85rem'}}>
+                        Hoặc tiếp tục với
+                    </span>
                 </div>
+
+                                <div className="d-flex justify-content-center">
+                                    <div id="googleLoginWrapper">
+                                        <div className="google-btn-custom">
+                                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                                <GoogleLogin
+                                                    onSuccess={async (credentialResponse) => {
+                                                        const idToken = credentialResponse.credential;
+                                                        try {
+                                                            setIsLoading(true);
+                                                            const response = await api.post('/auth/google-login', { idToken });
+                                                            const { token, user } = response.data;
+                                                            
+                                                            localStorage.setItem('token', token);
+                                                            localStorage.setItem('user', JSON.stringify(user));
+                                                            
+                                                            // Redirect based on role
+                                                            if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') navigate('/admin');
+                                                            else if (user.role === 'MANAGER') navigate('/manager');
+                                                            else navigate('/employee');
+                                                        } catch (err) {
+                                                            console.error("Google Login fail:", err);
+                                                            setError("Đăng nhập bằng Google thất bại: " + (err.response?.data || err.message));
+                                                        } finally {
+                                                            setIsLoading(false);
+                                                        }
+                                                    }}
+                                                    onError={() => {
+                                                        console.log('Login Failed');
+                                                        setError("Đăng nhập bằng Google thất bại!");
+                                                    }}
+                                                    useOneTap
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
             </div>
         </div>
     );

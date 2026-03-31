@@ -329,7 +329,7 @@ User
 ├── id: String
 ├── fullName: String
 ├── email: String
-├── role: ERole (ADMIN, MANAGER, EMPLOYEE, QA)
+├── role: (ADMIN, MANAGER, EMPLOYEE)
 ├── department: Department (DBRef)
 └── ...
 

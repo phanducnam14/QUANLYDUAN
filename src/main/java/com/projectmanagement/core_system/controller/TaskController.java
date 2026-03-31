@@ -69,4 +69,10 @@ public class TaskController {
     public Map<String, Object> getTaskStatistics() {
         return taskService.getTaskStatistics();
     }
+
+    // 6. Lấy tất cả Task (Admin Dashboard)
+    @GetMapping
+    public List<Task> getAllTasks() {
+        return taskService.getAllTasks();
+    }
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ChangePasswordForm from '../components/ChangePasswordForm';
 import NotificationBell from '../components/NotificationBell';
 import api from '../api';
+import { formatDeptName } from '../utils/formatUtils';
 import './AdminDashboard.css';
 
 const ProfilePage = () => {
@@ -305,7 +306,7 @@ const ProfilePage = () => {
                                     {currentUser.department && (
                                         <div>
                                             <small className="text-muted d-block">Phòng ban</small>
-                                            <span className="text-dark fw-bold">{currentUser.department.name}</span>
+                                            <span className="text-dark fw-bold">{formatDeptName(currentUser.department.name)}</span>
                                         </div>
                                     )}
                                 </div>
@@ -370,7 +371,15 @@ const ProfilePage = () => {
                                             <div>
                                                 <label className="form-label fw-bold text-dark">Phòng Ban</label>
                                                 <p className="form-control-plaintext text-muted border-bottom pb-2">
-                                                    {currentUser.department?.name || 'Không có'}
+                                                    {currentUser.department ? formatDeptName(currentUser.department.name) : 'Không có'}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <div>
+                                                <label className="form-label fw-bold text-dark">Google Email (OAuth2)</label>
+                                                <p className="form-control-plaintext text-muted border-bottom pb-2">
+                                                    {currentUser.googleEmail || 'Chưa liên kết'}
                                                 </p>
                                             </div>
                                         </div>

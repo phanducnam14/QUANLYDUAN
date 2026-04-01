@@ -78,10 +78,16 @@ const NotificationBell = () => {
     };
 
     return (
-        <div className="notification-bell-container position-relative">
+        <div 
+            className="notification-bell-container position-relative"
+            onMouseEnter={() => {
+                fetchNotifications();
+                setShowDropdown(true);
+            }}
+            onMouseLeave={() => setShowDropdown(false)}
+        >
             <button
                 className="btn btn-link position-relative text-dark"
-                onClick={handleBellClick}
                 style={{ textDecoration: 'none', fontSize: '20px' }}
             >
                 <i className="bi bi-bell-fill"></i>
@@ -101,14 +107,15 @@ const NotificationBell = () => {
                     maxHeight: '400px',
                     overflowY: 'auto',
                     zIndex: 1000,
-                    marginTop: '10px',
-                    borderRadius: '8px'
+                    marginTop: '0px',
+                    borderRadius: '8px',
+                    padding: '10px 0'
                 }}>
-                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center mx-2 rounded-2">
                         <h6 className="mb-0">Thông báo ({unreadCount} chưa đọc)</h6>
                         {unreadCount > 0 && (
                             <button
-                                className="btn btn-link text-white btn-sm"
+                                className="btn btn-link text-white btn-sm p-0"
                                 onClick={handleMarkAllAsRead}
                                 style={{ fontSize: '12px' }}
                             >
@@ -165,20 +172,6 @@ const NotificationBell = () => {
                         )}
                     </div>
                 </div>
-            )}
-
-            {showDropdown && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 999
-                    }}
-                    onClick={() => setShowDropdown(false)}
-                />
             )}
         </div>
     );

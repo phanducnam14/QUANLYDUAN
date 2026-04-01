@@ -1,19 +1,17 @@
 package com.projectmanagement.core_system.config;
 
-import com.mongodb.client.MongoClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 
 @Configuration
-public class MongoConfig extends AbstractMongoClientConfiguration {
+@EnableMongoAuditing
+public class MongoConfig {
 
-    @Override
-    protected String getDatabaseName() {
-        return "project_management_db";
-    }
-
-    @Override
-    public MongoClient mongoClient() {
-        return com.mongodb.client.MongoClients.create("mongodb://localhost:27017");
+    @Bean
+    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+        return new MongoTransactionManager(dbFactory);
     }
 }

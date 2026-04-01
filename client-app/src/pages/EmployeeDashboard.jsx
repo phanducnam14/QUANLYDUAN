@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
+import { formatDeptName } from '../utils/formatUtils';
 import NotificationBell from '../components/NotificationBell';
 import TaskDetailModal from '../components/TaskDetailModal';
 import ProjectChatPanel from '../components/ProjectChatPanel';
@@ -92,7 +93,7 @@ const EmployeeDashboard = () => {
     };
 
     return (
-        <div className="min-vh-100 bg-light d-flex flex-column" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="min-vh-100 bg-light d-flex flex-column">
             <style>{`
                 .glass-header {
                     padding: 12px 24px;
@@ -102,7 +103,7 @@ const EmployeeDashboard = () => {
                     z-index: 1000;
                 }
                 .brand-text {
-                    font-family: 'Poppins', sans-serif;
+                    
                     font-weight: 800;
                     font-size: 1.25rem;
                     background: linear-gradient(135deg, #1a202c 0%, #4a5568 100%);
@@ -260,7 +261,10 @@ const EmployeeDashboard = () => {
                     <div className="row g-4 mb-5 align-items-center">
                         <div className="col-lg-6 animate-fade-in">
                             <h2 className="fw-bold text-dark mb-1">Xin chào, {currentUser.fullName} 👋</h2>
-                            <p className="text-muted">Bạn có <span className="text-primary fw-bold">{myTasks.length}</span> công việc đang thực hiện.</p>
+                            <p className="text-muted">
+                                {currentUser.department && <span className="badge bg-primary bg-opacity-10 text-primary me-2">{formatDeptName(currentUser.department.name)}</span>}
+                                Bạn có <span className="text-primary fw-bold">{myTasks.length}</span> công việc đang thực hiện.
+                            </p>
                         </div>
                         <div className="col-lg-6">
                             <div className="row g-3">

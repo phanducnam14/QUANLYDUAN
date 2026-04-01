@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String userEmail;
+        final String identifier;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             logDebug("No Bearer token found in header");
@@ -57,20 +57,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             jwt = authHeader.substring(7);
-            userEmail = jwtUtil.extractEmail(jwt);
-            logDebug("Token found for user: " + userEmail);
-            response.setHeader("X-Debug-User", userEmail);
+            identifier = jwtUtil.extractIdentifier(jwt);
+            logDebug("Token found for user: " + identifier);
+            response.setHeader("X-Debug-User", identifier);
 
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-                logDebug("UserDetails loaded for: " + userEmail);
+            if (identifier != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(identifier);
+                logDebug("UserDetails loaded for: " + identifier);
 
-                if (jwtUtil.validateToken(jwt, userEmail)) {
+                if (jwtUtil.validateToken(jwt, identifier)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logDebug("Authentication SET in SecurityContext for: " + userEmail + " with roles: " + userDetails.getAuthorities());
+                    logDebug("Authentication SET in SecurityContext for: " + identifier + " with roles: " + userDetails.getAuthorities());
                     response.setHeader("X-Debug-Auth", "Authenticated");
                 } else {
                     logDebug("Token validation FAILED");

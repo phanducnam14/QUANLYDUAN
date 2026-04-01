@@ -1,5 +1,6 @@
 package com.projectmanagement.core_system.controller;
 
+import com.projectmanagement.core_system.aspect.LogActivity;
 import com.projectmanagement.core_system.config.JwtUtil;
 import com.projectmanagement.core_system.model.LoginRequest;
 import com.projectmanagement.core_system.model.User;
@@ -32,6 +33,7 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
     
     @PostMapping("/login")
+    @LogActivity(actionType = "LOGIN", resourceType = "AUTH")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         logger.info("Login attempt for email: {}", loginRequest.getEmail());
         

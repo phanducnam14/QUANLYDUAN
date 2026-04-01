@@ -27,27 +27,13 @@ public class NotificationController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Lấy danh sách thông báo của user hiện tại
-    @GetMapping
-    public ResponseEntity<?> getNotifications(@RequestHeader("Authorization") String token) {
-        try {
-            String email = jwtUtil.extractEmail(token.replace("Bearer ", ""));
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
-
-            List<Notification> notifications = notificationService.getNotifications(user);
-            return ResponseEntity.ok(notifications);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Không đủ quyền!");
-        }
-    }
-
     // Lấy số lượng thông báo chưa đọc
     @GetMapping("/unread-count")
     public ResponseEntity<?> getUnreadCount(@RequestHeader("Authorization") String token) {
         try {
-            String email = jwtUtil.extractEmail(token.replace("Bearer ", ""));
-            User user = userRepository.findByEmail(email)
+            String identifier = jwtUtil.extractIdentifier(token.replace("Bearer ", ""));
+            User user = userRepository.findByEmail(identifier)
+                    .or(() -> userRepository.findByGoogleEmail(identifier))
                     .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
             long count = notificationService.getUnreadCount(user);
@@ -63,8 +49,9 @@ public class NotificationController {
     @GetMapping("/unread")
     public ResponseEntity<?> getUnreadNotifications(@RequestHeader("Authorization") String token) {
         try {
-            String email = jwtUtil.extractEmail(token.replace("Bearer ", ""));
-            User user = userRepository.findByEmail(email)
+            String identifier = jwtUtil.extractIdentifier(token.replace("Bearer ", ""));
+            User user = userRepository.findByEmail(identifier)
+                    .or(() -> userRepository.findByGoogleEmail(identifier))
                     .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
             List<Notification> notifications = notificationService.getUnreadNotifications(user);
@@ -92,8 +79,9 @@ public class NotificationController {
     @PostMapping("/mark-all-as-read")
     public ResponseEntity<?> markAllAsRead(@RequestHeader("Authorization") String token) {
         try {
-            String email = jwtUtil.extractEmail(token.replace("Bearer ", ""));
-            User user = userRepository.findByEmail(email)
+            String identifier = jwtUtil.extractIdentifier(token.replace("Bearer ", ""));
+            User user = userRepository.findByEmail(identifier)
+                    .or(() -> userRepository.findByGoogleEmail(identifier))
                     .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
 
             notificationService.markAllAsRead(user);

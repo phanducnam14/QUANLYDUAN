@@ -179,4 +179,9 @@ public class TaskService {
 
         return results;
     }
+
+    // 6. Lấy tất cả Task
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
+    }
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +30,8 @@ public class Department {
     private String description;
 
     @DBRef
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JsonIgnoreProperties({"department"})
     private User manager; 
 }

@@ -4,6 +4,8 @@ import com.projectmanagement.core_system.model.Department;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DepartmentRepository extends MongoRepository<Department, String> {
     
@@ -13,4 +15,7 @@ public interface DepartmentRepository extends MongoRepository<Department, String
     // 🔥 MỚI: Kiểm tra trùng tên KHÔNG phân biệt hoa thường
     // (Ví dụ: Đã có "IT" thì không cho tạo "it" hay "It" nữa)
     boolean existsByNameIgnoreCase(String name);
+
+    // 🔥 MỚI: Tìm phòng ban theo tên chứa từ khóa
+    List<Department> findByNameContainingIgnoreCase(String name);
 }

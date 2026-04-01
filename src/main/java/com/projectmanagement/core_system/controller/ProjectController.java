@@ -1,5 +1,6 @@
 package com.projectmanagement.core_system.controller;
 
+import com.projectmanagement.core_system.aspect.LogActivity;
 import com.projectmanagement.core_system.enums.ProjectStatus;
 import com.projectmanagement.core_system.model.Project;
 import com.projectmanagement.core_system.repository.ProjectRepository;
@@ -20,6 +21,7 @@ public class ProjectController {
 
     // 1. Tạo dự án
     @PostMapping("/create")
+    @LogActivity(actionType = "CREATE", resourceType = "PROJECT")
     public ResponseEntity<?> createProject(
             @RequestBody Project project,
             @RequestParam String deptId,
@@ -34,6 +36,7 @@ public class ProjectController {
 
     // 1b. Cập nhật dự án
     @PutMapping("/{id}/update")
+    @LogActivity(actionType = "UPDATE", resourceType = "PROJECT")
     public ResponseEntity<?> updateProject(@PathVariable String id, @RequestBody Project projectDetails) {
         try {
             return ResponseEntity.ok(projectService.updateProject(id, projectDetails));
@@ -105,6 +108,7 @@ public class ProjectController {
 
     // 6. Soft Delete Project (Admin only)
     @DeleteMapping("/{id}")
+    @LogActivity(actionType = "DELETE", resourceType = "PROJECT")
     public ResponseEntity<?> deleteProject(@PathVariable String id, @RequestParam String adminEmail) {
         try {
             return ResponseEntity.ok(projectService.softDelete(id, adminEmail));
@@ -125,6 +129,7 @@ public class ProjectController {
 
     // 8. Restore deleted project (Admin)
     @PostMapping("/{id}/restore")
+    @LogActivity(actionType = "RESTORE", resourceType = "PROJECT")
     public ResponseEntity<?> restoreProject(@PathVariable String id, @RequestParam String adminEmail) {
         try {
             return ResponseEntity.ok(projectService.restoreProject(id, adminEmail));

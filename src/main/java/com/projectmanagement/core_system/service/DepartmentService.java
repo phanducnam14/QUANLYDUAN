@@ -51,7 +51,7 @@ public class DepartmentService {
         }
 
         // 🛑 Chặn xóa nếu còn Nhân viên
-        if (!userRepository.findByDepartment_Id(id).isEmpty()) {
+        if (!userRepository.findByDepartment_Id(id, org.springframework.data.domain.Sort.unsorted()).isEmpty()) {
             throw new RuntimeException("Không thể xóa: Vẫn còn nhân viên thuộc phòng ban này!");
         }
 

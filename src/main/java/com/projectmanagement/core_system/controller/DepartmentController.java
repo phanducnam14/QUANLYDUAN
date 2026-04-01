@@ -1,5 +1,6 @@
 package com.projectmanagement.core_system.controller;
 
+import com.projectmanagement.core_system.aspect.LogActivity;
 import com.projectmanagement.core_system.model.Department;
 import com.projectmanagement.core_system.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class DepartmentController {
 
     // 2. Tạo mới
     @PostMapping
+    @LogActivity(actionType = "CREATE", resourceType = "DEPARTMENT")
     public ResponseEntity<?> create(@RequestBody Department department) {
         try {
             return ResponseEntity.ok(departmentService.createDepartment(department));
@@ -39,6 +41,7 @@ public class DepartmentController {
 
     // 3. Xóa
     @DeleteMapping("/{id}")
+    @LogActivity(actionType = "DELETE", resourceType = "DEPARTMENT")
     public ResponseEntity<?> delete(@PathVariable String id) {
         try {
             departmentService.deleteDepartment(id);
@@ -50,6 +53,7 @@ public class DepartmentController {
 
     // 4. Cập nhật
     @PutMapping("/{id}")
+    @LogActivity(actionType = "UPDATE", resourceType = "DEPARTMENT")
     public ResponseEntity<?> update(@PathVariable String id, @RequestBody Department department) {
         try {
             return ResponseEntity.ok(departmentService.updateDepartment(id, department));
